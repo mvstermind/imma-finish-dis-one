@@ -1,5 +1,6 @@
 const std = @import("std");
 const ascii = @import("ascii.zig");
+const opts = @import("opts.zig");
 
 pub fn main() !void {
     const args = std.os.argv;
@@ -8,12 +9,12 @@ pub fn main() !void {
         displayHelp();
     }
 
-    checkArgs(&args);
+    opts.checkArgs(args[1..]);
 
     ascii.display();
 }
 
-fn displayHelp() void {
+pub fn displayHelp() void {
     const help =
         \\Options:
         \\    -t  --target      = victim address
@@ -21,7 +22,6 @@ fn displayHelp() void {
         \\    -sw --subwordlist = subdomain enumeration wordlist
         \\    -m  --mode        = enumeration options (subdomain / dir)
         \\    -s  --save        = save output results to txt file
-        \\    -q  --quiet       = don't display ascii art on program run
         \\
         \\Example:
         \\./tf-is-this-shit -t 10.x.x.x -m sub -sw ~/wordlist
