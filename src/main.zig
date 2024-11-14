@@ -20,7 +20,6 @@ pub fn displayHelp() void {
         \\    -t  --target      = victim address
         \\    -dw --dirwordlist = directory enumeration wordlist
         \\    -sw --subwordlist = subdomain enumeration wordlist
-        \\    -m  --mode        = enumeration options (subdomain / dir)
         \\    -s  --save        = save output results to txt file
         \\
         \\Example:

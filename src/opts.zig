@@ -10,6 +10,7 @@ const HELP_ARG: [2][]const u8 = .{ "-h", "--help" };
 
 const Target = struct {
     address: [*:0]u8,
+    is_address: bool,
 
     is_dir: bool,
     dir_wordlist: [*:0]u8,
@@ -22,10 +23,16 @@ const Target = struct {
 };
 
 pub fn checkArgs(sys_args: [][*:0]u8) void {
-    var target: Target = Target{ .address = undefined, .is_sub = false, .is_dir = false };
+    var target = newTarget();
 
-    for (sys_args, 0..sys_args.len - 1) |curr_arg, i| {
+    for (sys_args, 0..sys_args.len) |curr_arg, i| {
         if (argsCmp(curr_arg, TARGET_ARG)) {
+            // required fella
+            target.is_address = true;
+            if (i + 1 > sys_args.len) {
+                return;
+            }
+
             target.address = sys_args[i + 1];
         }
 
@@ -49,11 +56,9 @@ pub fn checkArgs(sys_args: [][*:0]u8) void {
             target.output_file = sys_args[i + 1];
         } else {
             print("Invalid input: \n", .{});
-            for () |value| {}
         }
     }
-
-    print("{s}", .{target});
+    validateArgs(target);
 }
 
 fn argsCmp(input_arg: [*:0]u8, command_arg: [2][]const u8) bool {
@@ -65,3 +70,38 @@ fn argsCmp(input_arg: [*:0]u8, command_arg: [2][]const u8) bool {
     }
     return false;
 }
+
+// check if we have all required args to go
+// if not then we are fucked
+fn validateArgs(target: Target) void {
+    const allocator = std.heap.page_allocator;
+    var missing_args = std.ArrayList(u8).init(allocator);
+    defer missing_args.deinit();
+
+    if (!target.is_address) {
+        const target_str = "Target";
+        missing_args.appendSlice(target_str) catch {
+            return;
+        };
+    }
+
+    print("Missing args:\n", .{});
+    // Convert the ArrayList to a slice for printing
+    const args_slice = missing_args.toOwnedSlice();
+    print("{any}\n", .{args_slice});
+}
+
+fn newTarget() Target {
+    return Target{
+        .is_address = false,
+        .is_dir = false,
+        .is_sub = false,
+        .save_output = false,
+        .output_file = undefined,
+        .address = undefined,
+        .dir_wordlist = undefined,
+        .sub_wordlist = undefined,
+    };
+}
+
+fn thereIsNextIndex(curr_index: comptime_int, length: comptime_int) bool {}
