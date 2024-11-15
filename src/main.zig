@@ -1,6 +1,7 @@
 const std = @import("std");
 const ascii = @import("ascii.zig");
 const opts = @import("opts.zig");
+const print = std.debug.print;
 
 pub fn main() !void {
     const args = std.os.argv;
@@ -9,7 +10,12 @@ pub fn main() !void {
         displayHelp();
     }
 
-    opts.checkArgs(args[1..]);
+    const args_state = opts.checkArgs(args[1..]);
+
+    if (args_state == false) {
+        displayHelp();
+        return;
+    }
 
     ascii.display();
 }
